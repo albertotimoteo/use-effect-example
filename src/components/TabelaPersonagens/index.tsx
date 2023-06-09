@@ -24,17 +24,22 @@ type Character = {
 const TabelaPersonagens = () => {
   const [personagens, setPersonagens] = useState<Array<Character>>([])
   const [nome, setNome] = useState("")
+  const [page, setPage] = useState(1)
+  const [pageCount, setPageCount] = useState(0)
 
   useEffect(() => {
     const fetchCharacters = async () => {
       const result = await (
-        await fetch(`https://rickandmortyapi.com/api/character?name=${nome}`)
+        await fetch(
+          `https://rickandmortyapi.com/api/character?page=${page}&name=${nome}`
+        )
       ).json()
       setPersonagens(result.results)
+      setPageCount(result.info.pages)
     }
 
     fetchCharacters()
-  }, [nome])
+  }, [nome, page, pageCount])
 
   return (
     <>
@@ -63,6 +68,13 @@ const TabelaPersonagens = () => {
             </tr>
           ))}
         </tbody>
+        <tfoot>
+          {Array(pageCount)
+            .fill(null)
+            .map((_, index) => (
+              <button onClick={() => setPage(index + 1)}>{index + 1}</button>
+            ))}
+        </tfoot>
       </table>
     </>
   )
